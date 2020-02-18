@@ -1,0 +1,74 @@
+#----------------------- <+++ansible-managed-file+++> -------------------------+
+#
+#                           IMPORTANT WARNING
+#
+#   This file is managed remotely by Ansible orchestration tool. Any local
+#         changes will be overwritten !!! You have been warned !!!
+#
+#----------------------- <+++ansible-managed-file+++> -------------------------+
+
+#
+# Fail2Ban jail configuration file - LOCAL CUSTOMIZATIONS
+#
+
+[DEFAULT]
+
+ignoreip = {{ hm_warden_f2b__ignore_ip }}
+bantime  = 3600
+maxretry = 5
+findtime = 300
+
+backend = polling
+
+destemail = {{ hm_warden_f2b__dest_email }}
+
+sender = fail2ban@<fq-hostname>
+
+actionlogfile = {{ hm_warden_f2b__log_file_action }}
+
+#
+# JAILS
+#
+
+[postfix-blacklisted]
+
+enabled  = true
+port     = smtp,ssmtp
+filter   = cust-postfix-blocked
+logpath  = {{ hm_warden_f2b__log_stream }}
+action   = cust-blacklist-found-listed
+           cust-warden-found-listed[jailname=%(__name__)s]
+           cust-log[jailname=%(__name__)s,actionlogfile=%(actionlogfile)s]
+bantime  = 7d
+maxretry = 2
+
+[postfix-spam]
+
+enabled  = true
+port     = smtp,ssmtp
+filter   = cust-postfix-spam
+logpath  = {{ hm_warden_f2b__log_stream }}
+action   = cust-blacklist-spammer
+           cust-warden-spammer[jailname=%(__name__)s]
+           cust-log[jailname=%(__name__)s,actionlogfile=%(actionlogfile)s]
+
+[postfix-user-unknown]
+
+enabled  = true
+port     = smtp,ssmtp
+filter   = cust-postfix-unknown-email
+logpath  = {{ hm_warden_f2b__log_stream }}
+action   = cust-blacklist-unknown-email
+           cust-warden-unknown-email[jailname=%(__name__)s]
+           cust-log[jailname=%(__name__)s,actionlogfile=%(actionlogfile)s]
+maxretry = 50
+
+[sshd]
+
+enabled  = true
+logpath  = {{ hm_warden_f2b__log_stream }}
+action   = cust-log[jailname=%(__name__)s,actionlogfile=%(actionlogfile)s]
+bantime  = 1
+maxretry = 5
+findtime = 300
+

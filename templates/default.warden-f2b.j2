@@ -1,0 +1,29 @@
+#!/bin/bash
+#----------------------- <+++ansible-managed-file+++> -------------------------+
+#
+#                             IMPORTANT WARNING
+#
+#  This file is managed remotely by Ansible orchestration tool. Any local
+#  changes will be overwritten without any notice !!! You have been warned !!!
+#
+#----------------------- <+++ansible-managed-file+++> -------------------------+
+
+WF2B_TEST_MODE="{{ hm_warden_f2b__test_mode | lower }}"
+
+WF2B_FILER_DIRS=( "{{ hm_warden_client__filers | selectattr('sender_enabled') | map(attribute = 'sender_queue') | join('" "') }}" )
+
+WF2B_LOG_FILE="{{ hm_warden_f2b__log_file_events }}"
+
+function uuid() {
+    for ((n=0; n<16; n++)); do
+        read -n1 c < /dev/urandom
+        LC_CTYPE=C d=$(printf '%d' "'$c")
+        s=''
+        case $n in
+            6) ((d = d & 79 | 64));;
+            8) ((d = d & 191 | 128));;
+            3|5|9|7) s='-';;
+        esac
+        printf '%02x%s' $d "$s"
+    done
+}

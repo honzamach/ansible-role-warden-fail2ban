@@ -1,0 +1,25 @@
+#----------------------- <+++ansible-managed-file+++> -------------------------+
+#
+#                           IMPORTANT WARNING
+#
+#   This file is managed remotely by Ansible orchestration tool. Any local
+#         changes will be overwritten !!! You have been warned !!!
+#
+#----------------------- <+++ansible-managed-file+++> -------------------------+
+
+{{ hm_warden_f2b__logdir }}/*.log
+{
+
+    daily
+    rotate 31
+    missingok
+    notifempty
+    copytruncate
+    compress
+    delaycompress
+    dateext
+    postrotate
+        fail2ban-client flushlogs 1>/dev/null
+    endscript
+    create 640 root adm
+}

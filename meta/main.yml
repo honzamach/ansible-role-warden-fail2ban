@@ -1,0 +1,18 @@
+galaxy_info:
+  role_name: warden_fail2ban
+  author: Jan Mach
+  description: Ansible role for convenient installation of Fail2Ban as a detector for Warden client.
+  license: MIT
+  min_ansible_version: 2.5
+  github_branch: master
+  platforms:
+    - name: Debian
+      versions:
+        - all
+  galaxy_tags:
+    - monitoring
+    - detection
+    - honeypot
+
+dependencies:
+  - honzamach.warden_client

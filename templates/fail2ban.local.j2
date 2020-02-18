@@ -1,0 +1,19 @@
+
+#----------------------- <+++ansible-managed-file+++> -------------------------+
+#
+#                           IMPORTANT WARNING
+#
+#   This file is managed remotely by Ansible orchestration tool. Any local
+#         changes will be overwritten !!! You have been warned !!!
+#
+#----------------------- <+++ansible-managed-file+++> -------------------------+
+
+#
+# Fail2Ban main configuration file - LOCAL CUSTOMIZATIONS
+#
+
+[Definition]
+
+loglevel = {{ hm_warden_f2b__log_level_f2b }}
+
+logtarget = {{ hm_warden_f2b__log_file_f2b }}

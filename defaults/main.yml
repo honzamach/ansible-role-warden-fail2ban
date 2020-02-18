@@ -1,0 +1,28 @@
+---
+
+hm_warden_f2b__install_packages:
+  debian:
+    apt:
+      - fail2ban
+
+hm_warden_f2b__service_name: fail2ban
+
+hm_warden_f2b__test_mode: false
+
+hm_warden_f2b__node_name: org.domain.fail2ban.blacklist
+
+hm_warden_f2b__log_stream: /var/log/syslog
+
+hm_warden_f2b__dest_email: info@domain.org
+
+hm_warden_f2b__ignore_ip: "127.0.0.1"
+
+hm_warden_f2b__log_level_f2b: INFO
+
+hm_warden_f2b__logdir: "/var/log/fail2ban"
+
+hm_warden_f2b__log_file_f2b: "{{ hm_warden_f2b__logdir }}/fail2ban.log"
+
+hm_warden_f2b__log_file_action: "{{ hm_warden_f2b__logdir }}/warden-f2b.log"
+
+hm_warden_f2b__log_file_events: "{{ hm_warden_f2b__logdir }}/warden-f2b-events.log"

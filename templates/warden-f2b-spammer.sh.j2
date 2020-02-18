@@ -1,0 +1,75 @@
+#!/bin/bash
+#----------------------- <+++ansible-managed-file+++> -------------------------+
+#
+#                             IMPORTANT WARNING
+#
+#  This file is managed remotely by Ansible orchestration tool. Any local
+#  changes will be overwritten without any notice !!! You have been warned !!!
+#
+#----------------------- <+++ansible-managed-file+++> -------------------------+
+
+. /etc/default/warden-f2b
+
+umask 0111
+
+# Arguments received from command line.
+src_ip=$1
+failures=$2
+detect_time=$(date --date="@$3" --rfc-3339=seconds)
+jail_name=$4
+line_matches=$5
+
+# Additional arguments.
+create_time=$(date --rfc-3339=seconds)
+node_name="{{ hm_warden_f2b__node_name }}"
+event_id=$(uuid)
+
+# Determine the type of IP address family.
+ip_ver="4"
+if [[ $src_ip =~ ":" ]]
+then
+    ip_ver="6"
+fi
+
+#
+# Generate and send message using all currently configured filers.
+#
+for filer_dir in "${WF2B_FILER_DIRS[@]}"
+do
+    cat >"$filer_dir/tmp/$event_id" <<EOF
+{
+    "Format" : "IDEA0",
+    "ID" : "${event_id}",
+    "DetectTime" : "${detect_time}",
+    "CreateTime" : "${create_time}",
+    "Category" : ["Abusive.Spam"],
+    "Description" : "Blacklisted host",
+    "Note" : "IP was blacklisted, because it is sending spam. Block duration: 1 hour.",
+    "Source" : [{
+        "Type": ["Spam"],
+        "IP${ipver}" : ["${src_ip}"],
+        "Proto": ["tcp", "smtp"]
+    }],
+    "Node" : [{
+        "Name" : "${node_name}",
+        "SW" : ["Fail2Ban"],
+        "Type" : ["Log", "Statistical"]
+    }],
+    "_CESNET" : {
+        "Impact" : "IP was blacklisted, list will be used for email filtering"
+    }
+}
+EOF
+
+    echo "${create_time} [${jail_name}]: {'id':'${event_id}', 'detect_time': '${detect_time}', 'src_ip': '${src_ip}', 'failures': '${failures}'}" >> "$WF2B_LOG_FILE"
+    echo -e "${create_time}: ${event_id} - Matched lines:\n${line_matches}" >> "$WF2B_LOG_FILE"
+    echo -e "${create_time}: ${event_id} - Generated event:" | cat - "$filer_dir/tmp/$event_id" >> "$WF2B_LOG_FILE"
+
+    if [[ $WF2B_TEST_MODE == "true" ]]
+    then
+        rm "$filer_dir/tmp/$event_id"
+    else
+        mv "$filer_dir/tmp/$event_id" "$filer_dir/incoming"
+    fi
+
+done

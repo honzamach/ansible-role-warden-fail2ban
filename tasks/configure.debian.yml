@@ -1,0 +1,152 @@
+---
+
+- name: "Uploading custom Fail2Ban filters"
+  copy:
+    src: "{{ item.src }}"
+    dest: "/etc/fail2ban/filter.d/{{ item.path }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_filetree: "filter.d/"
+  when: item.state == 'file'
+  notify: Restart Fail2Ban service
+
+- name: "Uploading custom Fail2Ban actions"
+  copy:
+    src: "{{ item.src }}"
+    dest: "/etc/fail2ban/action.d/{{ item.path }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_filetree: "action.d/"
+  when: item.state == 'file'
+  notify: Restart Fail2Ban service
+
+- name: "Configuring local Fail2Ban master file"
+  template:
+    src: "{{ item }}"
+    dest: /etc/fail2ban/fail2ban.local
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  with_first_found:
+    - "inventory/host_files/{{ inventory_hostname }}/honzamach.warden_fail2ban/fail2ban.local.j2"
+    - "inventory/group_files/servers_{{ msms_server_type }}/honzamach.warden_fail2ban/fail2ban.local.{{ ansible_lsb['codename'] }}.j2"
+    - "inventory/group_files/servers_{{ msms_server_type }}/honzamach.warden_fail2ban/fail2ban.local.j2"
+    - "inventory/group_files/servers/honzamach.warden_fail2ban/fail2ban.local.{{ ansible_lsb['codename'] }}.j2"
+    - "inventory/group_files/servers/honzamach.warden_fail2ban/fail2ban.local.j2"
+    - "fail2ban.local.{{ ansible_lsb['codename'] }}.j2"
+    - "fail2ban.local.j2"
+  notify: Restart Fail2Ban service
+
+- name: "Configuring local Fail2Ban jail file"
+  template:
+    src: "{{ item }}"
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  with_first_found:
+    - "inventory/host_files/{{ inventory_hostname }}/honzamach.warden_fail2ban/jail.local.j2"
+    - "inventory/group_files/servers_{{ msms_server_type }}/honzamach.warden_fail2ban/jail.local.{{ ansible_lsb['codename'] }}.j2"
+    - "inventory/group_files/servers_{{ msms_server_type }}/honzamach.warden_fail2ban/jail.local.j2"
+    - "inventory/group_files/servers/honzamach.warden_fail2ban/jail.local.{{ ansible_lsb['codename'] }}.j2"
+    - "inventory/group_files/servers/honzamach.warden_fail2ban/jail.local.j2"
+    - "jail.local.{{ ansible_lsb['codename'] }}.j2"
+    - "jail.local.j2"
+  notify: Restart Fail2Ban service
+
+- name: "Configuring defaults for Fail2Ban connector for Warden client"
+  template:
+    src: "{{ item }}"
+    dest: /etc/default/warden-f2b
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  with_first_found:
+    - "inventory/host_files/{{ inventory_hostname }}/honzamach.warden_fail2ban/default.warden-f2b.j2"
+    - "inventory/group_files/servers_{{ msms_server_type }}/honzamach.warden_fail2ban/default.warden-f2b.{{ ansible_lsb['codename'] }}.j2"
+    - "inventory/group_files/servers_{{ msms_server_type }}/honzamach.warden_fail2ban/default.warden-f2b.j2"
+    - "inventory/group_files/servers/honzamach.warden_fail2ban/default.warden-f2b.{{ ansible_lsb['codename'] }}.j2"
+    - "inventory/group_files/servers/honzamach.warden_fail2ban/default.warden-f2b.j2"
+    - "default.warden-f2b.{{ ansible_lsb['codename'] }}.j2"
+    - "default.warden-f2b.j2"
+
+- name: "Configuring Fail2Ban connector for Warden client - blacklisted reporter"
+  template:
+    src: "{{ item }}"
+    dest: /usr/local/bin/warden-f2b-found-listed.sh
+    owner: root
+    group: root
+    mode: 0755
+    backup: yes
+  with_first_found:
+    - "inventory/host_files/{{ inventory_hostname }}/honzamach.warden_fail2ban/warden-f2b-found-listed.sh.j2"
+    - "inventory/group_files/servers_{{ msms_server_type }}/honzamach.warden_fail2ban/warden-f2b-found-listed.sh.{{ ansible_lsb['codename'] }}.j2"
+    - "inventory/group_files/servers_{{ msms_server_type }}/honzamach.warden_fail2ban/warden-f2b-found-listed.sh.j2"
+    - "inventory/group_files/servers/honzamach.warden_fail2ban/warden-f2b-found-listed.sh.{{ ansible_lsb['codename'] }}.j2"
+    - "inventory/group_files/servers/honzamach.warden_fail2ban/warden-f2b-found-listed.sh.j2"
+    - "warden-f2b-found-listed.sh.{{ ansible_lsb['codename'] }}.j2"
+    - "warden-f2b-found-listed.sh.j2"
+
+- name: "Configuring Fail2Ban connector for Warden client - spammer reporter"
+  template:
+    src: "{{ item }}"
+    dest: /usr/local/bin/warden-f2b-spammer.sh
+    owner: root
+    group: root
+    mode: 0755
+    backup: yes
+  with_first_found:
+    - "inventory/host_files/{{ inventory_hostname }}/honzamach.warden_fail2ban/warden-f2b-spammer.sh.j2"
+    - "inventory/group_files/servers_{{ msms_server_type }}/honzamach.warden_fail2ban/warden-f2b-spammer.sh.{{ ansible_lsb['codename'] }}.j2"
+    - "inventory/group_files/servers_{{ msms_server_type }}/honzamach.warden_fail2ban/warden-f2b-spammer.sh.j2"
+    - "inventory/group_files/servers/honzamach.warden_fail2ban/warden-f2b-spammer.sh.{{ ansible_lsb['codename'] }}.j2"
+    - "inventory/group_files/servers/honzamach.warden_fail2ban/warden-f2b-spammer.sh.j2"
+    - "warden-f2b-spammer.sh.{{ ansible_lsb['codename'] }}.j2"
+    - "warden-f2b-spammer.sh.j2"
+
+- name: "Configuring Fail2Ban connector for Warden client - unknown email reporter"
+  template:
+    src: "{{ item }}"
+    dest: /usr/local/bin/warden-f2b-unknown-email.sh
+    owner: root
+    group: root
+    mode: 0755
+    backup: yes
+  with_first_found:
+    - "inventory/host_files/{{ inventory_hostname }}/honzamach.warden_fail2ban/warden-f2b-unknown-email.sh.j2"
+    - "inventory/group_files/servers_{{ msms_server_type }}/honzamach.warden_fail2ban/warden-f2b-unknown-email.sh.{{ ansible_lsb['codename'] }}.j2"
+    - "inventory/group_files/servers_{{ msms_server_type }}/honzamach.warden_fail2ban/warden-f2b-unknown-email.sh.j2"
+    - "inventory/group_files/servers/honzamach.warden_fail2ban/warden-f2b-unknown-email.sh.{{ ansible_lsb['codename'] }}.j2"
+    - "inventory/group_files/servers/honzamach.warden_fail2ban/warden-f2b-unknown-email.sh.j2"
+    - "warden-f2b-unknown-email.sh.{{ ansible_lsb['codename'] }}.j2"
+    - "warden-f2b-unknown-email.sh.j2"
+
+- name: Configuring log directory
+  file:
+    path: "{{ hm_warden_f2b__logdir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Configuring log file rotation
+  template:
+    src: "{{ item }}"
+    dest: /etc/logrotate.d/fail2ban
+    owner: root
+    group: root
+    mode: "0644"
+  with_first_found:
+    - "inventory/host_files/{{ inventory_hostname }}/honzamach.warden_fail2ban/logrotate.fail2ban.{{ ansible_lsb['codename'] }}.j2"
+    - "inventory/host_files/{{ inventory_hostname }}/honzamach.warden_fail2ban/logrotate.fail2ban.j2"
+    - "inventory/group_files/servers_{{ msms_server_type }}/honzamach.warden_fail2ban/logrotate.fail2ban.{{ ansible_lsb['codename'] }}.j2"
+    - "inventory/group_files/servers_{{ msms_server_type }}/honzamach.warden_fail2ban/logrotate.fail2ban.j2"
+    - "inventory/group_files/servers/honzamach.warden_fail2ban/logrotate.fail2ban.{{ ansible_lsb['codename'] }}.j2"
+    - "inventory/group_files/servers/honzamach.warden_fail2ban/logrotate.fail2ban.j2"
+    - "logrotate.fail2ban.{{ ansible_lsb['codename'] }}.j2"
+    - "logrotate.fail2ban.j2"
