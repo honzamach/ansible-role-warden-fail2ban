@@ -52,15 +52,9 @@ This role is not dependent on any other role.
 
 This role is dependent on following roles:
 
-* :ref:`role1 <section-role-role1>`
-* :ref:`role2 <section-role-role2>` *[SOFT]*
+* :ref:`warden_client <section-role-warden-client>`
 
 No roles have dependency on this role.
-
-Following roles have dependency on this role:
-
-* :ref:`role3 <section-role-role3>`
-* :ref:`role4 <section-role-role4>` *[SOFT]*
 
 
 .. _section-role-honzamach-warden-fail2ban-usage:
@@ -69,6 +63,9 @@ Usage
 --------------------------------------------------------------------------------
 
 Example content of inventory file ``inventory``::
+
+    [servers]
+    your-server
 
     [servers_warden_fail2ban]
     your-server
