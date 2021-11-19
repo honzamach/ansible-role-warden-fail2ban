@@ -17,7 +17,7 @@ hm_warden_f2b__dest_email: info@domain.org
 
 hm_warden_f2b__ignore_ip: "127.0.0.1"
 
-hm_warden_f2b__log_level_f2b: INFO
+hm_warden_f2b__log_level_f2b: NOTICE 
 
 hm_warden_f2b__logdir: "/var/log/fail2ban"
 
