@@ -30,6 +30,17 @@ actionlogfile = {{ hm_warden_f2b__log_file_action }}
 # JAILS
 #
 
+[postfix-whitelisted]
+
+enabled  = true
+port     = smtp,ssmtp
+filter   = cust-postfix-wl
+logpath  = /var/log/f2b/mail-host.log
+action   = cust-postfix-wl
+           cust-log[jailname=%(__name__)s,actionlogfile=%(actionlogfile)s]
+maxretry = 1
+bantime  = 1d
+
 [postfix-blacklisted]
 
 enabled  = true
